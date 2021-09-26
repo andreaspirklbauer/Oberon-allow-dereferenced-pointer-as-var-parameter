@@ -22,7 +22,7 @@ MODULE ORG; (* N.Wirth, 16.4.2016 / 4.4.2017 / 31.5.2019  Oberon compiler; code 
       mode*: INTEGER;
       type*: ORB.Type;
       a*, b*, r: LONGINT;
-      rdo*, sel*, deref*, unused: BOOLEAN  (*read only, selected, dereferenced*)
+      rdo*, selected*, deref*, unused: BOOLEAN  (*read only, selected in record or array, dereferenced*)
     END ;
 
   (* Item forms and meaning of fields:
@@ -247,7 +247,7 @@ MODULE ORG; (* N.Wirth, 16.4.2016 / 4.4.2017 / 31.5.2019  Oberon compiler; code 
   END MakeStringItem;
 
   PROCEDURE MakeItem*(VAR x: Item; y: ORB.Object; curlev: LONGINT);
-  BEGIN x.mode := y.class; x.type := y.type; x.a := y.val; x.rdo := y.rdo; x.sel := FALSE; x.deref := FALSE;
+  BEGIN x.mode := y.class; x.type := y.type; x.a := y.val; x.rdo := y.rdo; x.selected := FALSE; x.deref := FALSE;
     IF y.class = ORB.Par THEN x.b := 0
     ELSIF (y.class = ORB.Const) & (y.type.form = ORB.String) THEN x.b := y.lev  (*len*) ;
     ELSE x.r := y.lev

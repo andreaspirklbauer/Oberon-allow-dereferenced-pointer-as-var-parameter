@@ -125,7 +125,7 @@ Create the modified Oberon compiler:
        type*: ORB.Type;
        a*, b*, r: LONGINT;
 -      rdo*: BOOLEAN  (*read only*)
-+      rdo*, sel*, deref*, unused: BOOLEAN  (*read only, selected, dereferenced*)
++      rdo*, selected*, deref*, unused: BOOLEAN  (*read only, selected in record or array, dereferenced*)
      END ;
  
    (* Item forms and meaning of fields:
@@ -134,7 +134,7 @@ Create the modified Oberon compiler:
  
    PROCEDURE MakeItem*(VAR x: Item; y: ORB.Object; curlev: LONGINT);
 -  BEGIN x.mode := y.class; x.type := y.type; x.a := y.val; x.rdo := y.rdo;
-+  BEGIN x.mode := y.class; x.type := y.type; x.a := y.val; x.rdo := y.rdo; x.sel := FALSE; x.deref := FALSE;
++  BEGIN x.mode := y.class; x.type := y.type; x.a := y.val; x.rdo := y.rdo; x.selected := FALSE; x.deref := FALSE;
      IF y.class = ORB.Par THEN x.b := 0
      ELSIF (y.class = ORB.Const) & (y.type.form = ORB.String) THEN x.b := y.lev  (*len*) ;
      ELSE x.r := y.lev
@@ -180,7 +180,7 @@ Create the modified Oberon compiler:
 
 **ORP.Mod**
 
-Note: The modification in *ORP.selector* (set *x.sel*) is strictly speaking not necessary for this fix.
+Note: The modification in *ORP.selector* (set *x.selected*) is strictly speaking not necessary for this fix.
 
 ```diff
 --- FPGAOberon2013/ORP.Mod	2020-03-13 14:23:55.000000000 +0100
@@ -190,7 +190,7 @@ Note: The modification in *ORP.selector* (set *x.sel*) is strictly speaking not 
    BEGIN
      WHILE (sym = ORS.lbrak) OR (sym = ORS.period) OR (sym = ORS.arrow)
 -        OR (sym = ORS.lparen) & (x.type.form IN {ORB.Record, ORB.Pointer}) DO
-+        OR (sym = ORS.lparen) & (x.type.form IN {ORB.Record, ORB.Pointer}) DO x.sel := TRUE;
++        OR (sym = ORS.lparen) & (x.type.form IN {ORB.Record, ORB.Pointer}) DO x.selected := TRUE;
        IF sym = ORS.lbrak THEN
          REPEAT ORS.Get(sym); expression(y);
            IF x.type.form = ORB.Array THEN
